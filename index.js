@@ -69,16 +69,15 @@ app.post("/schedule", (req, res) => {
 
   try {
     // Parse the cron expression
-    const interval = cronParser.parseExpression(cronExpression, {
-      tz: "Asia/Kolkata"
-    });
+    const interval = cronParser.parseExpression(cronExpression);
 
     // Calculate the next 10 occurrences
     const nextOccurrences = [];
     for (let i = 0; i < 10; i++) {
-      nextOccurrences.push(
-        moment(interval.next().toDate()).format("YYYY-MM-DD HH:mm:ss")
-      );
+      // Convert each occurrence to IST (Asia/Kolkata)
+      nextOccurrences.push(moment(interval.next().toDate())
+          .tz("Asia/Kolkata")
+          .format("YYYY-MM-DD HH:mm:ss"));
     }
 
     res.render("result", {
@@ -91,6 +90,7 @@ app.post("/schedule", (req, res) => {
     console.error(`Error parsing cron expression: ${err.message}`);
     res.status(400).render("result", { error: "Invalid cron expression" });
   }
+
 });
 
 app.listen(port, () => {
