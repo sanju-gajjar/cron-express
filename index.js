@@ -1,7 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cronParser = require("cron-parser");
 const moment = require("moment-timezone");
+const { CronJob } = require("cron");
+const cronParser = require("cron-parser");
 const app = express();
 const port = 5000;
 
@@ -10,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
-// Helper function to generate cron expression
+// Helper function to generate basic cron expression
 function generateCronExpression({
   minutes,
   hours,
@@ -23,25 +24,25 @@ function generateCronExpression({
   let hourPart = "*";
   let dayPart = "*";
   let monthPart = "*";
-  let weekPart = "?"; // Default value for day of the week
+  let weekPart = "*";
 
   if (scheduleType === "min") {
-    minutePart = minutes || "*";
+    minutePart = `*/${minutes}`; // Every X minutes
   } else if (scheduleType === "hourly") {
-    minutePart = minutes || "*";
+    minutePart = minutes || "0";
     hourPart = hours || "*";
   } else if (scheduleType === "weekly") {
-    minutePart = minutes || "*";
+    minutePart = minutes || "0";
     hourPart = hours || "*";
-    weekPart = weeks || "?";
+    weekPart = weeks || "*";
   } else if (scheduleType === "monthly") {
-    minutePart = "*";
-    hourPart = "*";
+    minutePart = "0";
+    hourPart = "0";
     dayPart = days || "*";
     monthPart = months || "*";
   }
 
-  return `${minutePart} ${hourPart} ${dayPart} ${monthPart} ${weekPart}`;
+  return `${minutePart} ${hourPart} ${dayPart} ${monthPart} ${weekPart}`; // Standard cron format
 }
 
 // Route for the main page
@@ -67,18 +68,21 @@ app.post("/schedule", (req, res) => {
   console.log(`Generated Cron Expression: ${cronExpression}`);
 
   try {
-    // Check if the cron expression is valid
-    const interval = cronParser.parseExpression(cronExpression);
+    // Parse the cron expression
+    const interval = cronParser.parseExpression(cronExpression, {
+      tz: "Asia/Kolkata"
+    });
+
+    // Calculate the next 10 occurrences
     const nextOccurrences = [];
     for (let i = 0; i < 10; i++) {
-      const nextDate = interval.next().toDate();
       nextOccurrences.push(
-        moment(nextDate).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+        moment(interval.next().toDate()).format("YYYY-MM-DD HH:mm:ss")
       );
     }
 
     res.render("result", {
-      error:undefined,
+      error: undefined,
       cronExpression,
       nextOccurrences
     });

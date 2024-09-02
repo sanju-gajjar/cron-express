@@ -4,144 +4,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-1528405293648386">
     <title>Cron Expression Maker</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .tab-content {
-            padding: 20px;
-            border-top: 1px solid #ddd;
+        body {
+            padding-top: 20px;
+        }
+
+        /* Styling for the ad spaces */
+        .ad-left,
+        .ad-right {
+            position: fixed;
+            top: 0;
+            width: 120px;
+            /* Adjust the width as needed */
+            height: 100%;
+            background-color: #f9f9f9;
+            /* Optional: Background color for the ad area */
+            z-index: 1000;
+            /* Ensures the ads are on top */
+        }
+
+        .ad-left {
+            left: 0;
+        }
+
+        .ad-right {
+            right: 0;
+        }
+
+        /* Adjust main content to make space for ads */
+        .container {
+            margin-left: 140px;
+            /* Adjust to make room for the left ad */
+            margin-right: 140px;
+            /* Adjust to make room for the right ad */
         }
     </style>
 </head>
 
 <body>
+    <!-- Left Ad -->
+    <!-- <div class="ad-left"> -->
+        <!-- Insert your ad code here (e.g., Google AdSense) -->
+        <!-- <p>Ad Space - Left</p>
+    </div> -->
+
+    <!-- Right Ad -->
+    <!-- <div class="ad-right"> -->
+        <!-- Insert your ad code here (e.g., Google AdSense) -->
+        <!-- <p>Ad Space - Right</p>
+    </div> -->
+
     <div class="container">
-        <h1 class="mt-5">Cron Expression Maker</h1>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="min-tab" data-toggle="tab" href="#min" role="tab" aria-controls="min"
-                    aria-selected="true">Min</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="hourly-tab" data-toggle="tab" href="#hourly" role="tab" aria-controls="hourly"
-                    aria-selected="false">Hourly</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="weekly-tab" data-toggle="tab" href="#weekly" role="tab" aria-controls="weekly"
-                    aria-selected="false">Weekly</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="monthly-tab" data-toggle="tab" href="#monthly" role="tab"
-                    aria-controls="monthly" aria-selected="false">Monthly</a>
-            </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-            <!-- Min Tab -->
-            <div class="tab-pane fade show active" id="min" role="tabpanel" aria-labelledby="min-tab">
-                <form action="/schedule" method="POST" class="mt-4">
-                    <div class="form-group">
-                        <label for="min-minute">Minutes (0-59)</label>
-                        <input type="text" class="form-control" id="min-minute" name="minutes" placeholder="e.g. 5" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
-                    <input type="hidden" name="scheduleType" value="min">
-                </form>
-            </div>
+        <h1>Cron Expression Maker</h1>
+        <div class="tab-content">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="min-tab" data-toggle="tab" href="#min" role="tab" aria-controls="min"
+                        aria-selected="true">Min</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="hourly-tab" data-toggle="tab" href="#hourly" role="tab"
+                        aria-controls="hourly" aria-selected="false">Hourly</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="weekly-tab" data-toggle="tab" href="#weekly" role="tab"
+                        aria-controls="weekly" aria-selected="false">Weekly</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="monthly-tab" data-toggle="tab" href="#monthly" role="tab"
+                        aria-controls="monthly" aria-selected="false">Monthly</a>
+                </li>
+            </ul>
+            <div class="tab-content mt-2">
+                <!-- Min Tab -->
+                <div class="tab-pane fade show active" id="min" role="tabpanel" aria-labelledby="min-tab">
+                    <form action="/schedule" method="POST">
+                        <div class="form-group">
+                            <label for="min-minutes">Minutes (e.g. 2)</label>
+                            <input type="text" class="form-control" id="min-minutes" name="minutes"
+                                placeholder="e.g. 2" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                        <input type="hidden" name="scheduleType" value="min">
+                    </form>
+                </div>
 
-            <!-- Hourly Tab -->
-            <div class="tab-pane fade" id="hourly" role="tabpanel" aria-labelledby="hourly-tab">
-                <form action="/schedule" method="POST" class="mt-4">
-                    <div class="form-group">
-                        <label for="hourly-hour">Hours (0-23)</label>
-                        <select class="form-control" id="hourly-hour" name="hours">
-                            <option value="*">Every hour</option>
-                            <% for (let i=0; i < 24; i++) { %>
-                                <option value="<%= i %>">
-                                    <%= i %>:00
-                                </option>
-                                <% } %>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="hourly-minute">Minutes (0-59)</label>
-                        <input type="text" class="form-control" id="hourly-minute" name="minutes"
-                            placeholder="e.g. 15" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
-                    <input type="hidden" name="scheduleType" value="hourly">
-                </form>
-            </div>
+                <!-- Hourly Tab -->
+                <div class="tab-pane fade" id="hourly" role="tabpanel" aria-labelledby="hourly-tab">
+                    <form action="/schedule" method="POST">
+                        <div class="form-group">
+                            <label for="hourly-hours">Hours</label>
+                            <select class="form-control" id="hourly-hours" name="hours">
+                                <option value="*">Every hour</option>
+                                <% for (let i=0; i < 24; i++) { %>
+                                    <option value="<%= i %>">
+                                        <%= i %>:00
+                                    </option>
+                                    <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hourly-minutes">Minutes (e.g. 15)</label>
+                            <input type="text" class="form-control" id="hourly-minutes" name="minutes"
+                                placeholder="e.g. 15" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                        <input type="hidden" name="scheduleType" value="hourly">
+                    </form>
+                </div>
 
-            <!-- Weekly Tab -->
-            <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
-                <form action="/schedule" method="POST" class="mt-4">
-                    <div class="form-group">
-                        <label for="weekly-hour">Hours (0-23)</label>
-                        <select class="form-control" id="weekly-hour" name="hours">
-                            <option value="*">Every hour</option>
-                            <% for (let i=0; i < 24; i++) { %>
-                                <option value="<%= i %>">
-                                    <%= i %>:00
-                                </option>
-                                <% } %>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="weekly-minute">Minutes (0-59)</label>
-                        <input type="text" class="form-control" id="weekly-minute" name="minutes"
-                            placeholder="e.g. 30" />
-                    </div>
-                    <div class="form-group">
-                        <label for="weekly-day">Day of Week</label>
-                        <select class="form-control" id="weekly-day" name="weeks">
-                            <option value="*">Every day</option>
-                            <option value="0">Sunday</option>
-                            <option value="1">Monday</option>
-                            <option value="2">Tuesday</option>
-                            <option value="3">Wednesday</option>
-                            <option value="4">Thursday</option>
-                            <option value="5">Friday</option>
-                            <option value="6">Saturday</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
-                    <input type="hidden" name="scheduleType" value="weekly">
-                </form>
-            </div>
+                <!-- Weekly Tab -->
+                <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
+                    <form action="/schedule" method="POST">
+                        <div class="form-group">
+                            <label for="weekly-hours">Hours</label>
+                            <select class="form-control" id="weekly-hours" name="hours">
+                                <option value="*">Every hour</option>
+                                <% for (let i=0; i < 24; i++) { %>
+                                    <option value="<%= i %>">
+                                        <%= i %>:00
+                                    </option>
+                                    <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="weekly-minutes">Minutes (e.g. 15)</label>
+                            <input type="text" class="form-control" id="weekly-minutes" name="minutes"
+                                placeholder="e.g. 15" />
+                        </div>
+                        <div class="form-group">
+                            <label for="weekly-week">Day of Week</label>
+                            <select class="form-control" id="weekly-week" name="weeks">
+                                <option value="?">Every day</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                        <input type="hidden" name="scheduleType" value="weekly">
+                    </form>
+                </div>
 
-            <!-- Monthly Tab -->
-            <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
-                <form action="/schedule" method="POST" class="mt-4">
-                    <div class="form-group">
-                        <label for="monthly-day">Day of Month (1-31)</label>
-                        <input type="text" class="form-control" id="monthly-day" name="days" placeholder="e.g. 12" />
-                    </div>
-                    <div class="form-group">
-                        <label for="monthly-month">Month</label>
-                        <select class="form-control" id="monthly-month" name="months">
-                            <option value="*">Every month</option>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
-                    <input type="hidden" name="scheduleType" value="monthly">
-                </form>
+                <!-- Monthly Tab -->
+                <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
+                    <form action="/schedule" method="POST">
+                        <div class="form-group">
+                            <label for="monthly-day">Day of Month (1-31)</label>
+                            <input type="text" class="form-control" id="monthly-day" name="days"
+                                placeholder="e.g. 12" />
+                        </div>
+                        <div class="form-group">
+                            <label for="monthly-month">Month</label>
+                            <select class="form-control" id="monthly-month" name="months">
+                                <option value="*">Every month</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                        <input type="hidden" name="scheduleType" value="monthly">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript for Bootstrap tabs -->
+    <!-- JavaScript dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
