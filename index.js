@@ -11,35 +11,56 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 
 // Helper function to generate cron expression
-function generateCronExpression({ minutes, hours, days, months, weeks }) {
-  const minutePart =
-    minutes && !isNaN(minutes)
-      ? minutes.includes("/") ? minutes : `*/${minutes}`
-      : "0";
-  const hourPart = hours || "*";
-  const dayPart = days || "*";
-  const monthPart = months || "*";
-  const weekPart = weeks || "*";
+function generateCronExpression({
+  minutes,
+  hours,
+  days,
+  months,
+  weeks,
+  scheduleType
+}) {
+  let minutePart = "*";
+  let hourPart = "*";
+  let dayPart = "*";
+  let monthPart = "*";
+  let weekPart = "?"; // Default value for day of the week
+
+  if (scheduleType === "min") {
+    minutePart = minutes || "*";
+  } else if (scheduleType === "hourly") {
+    minutePart = minutes || "*";
+    hourPart = hours || "*";
+  } else if (scheduleType === "weekly") {
+    minutePart = minutes || "*";
+    hourPart = hours || "*";
+    weekPart = weeks || "?";
+  } else if (scheduleType === "monthly") {
+    minutePart = "*";
+    hourPart = "*";
+    dayPart = days || "*";
+    monthPart = months || "*";
+  }
 
   return `${minutePart} ${hourPart} ${dayPart} ${monthPart} ${weekPart}`;
 }
 
 // Route for the main page
-app.get("/*", (req, res) => {
+app.get("/", (req, res) => {
   res.render("index");
 });
 
 // Route to handle form submission
 app.post("/schedule", (req, res) => {
-  const { minutes, hours, days, months, weeks } = req.body;
+  const { minutes, hours, days, months, weeks, scheduleType } = req.body;
 
   // Generate cron expression
   const cronExpression = generateCronExpression({
-    minutes: minutes || "*",
-    hours: hours || "*",
-    days: days || "*",
-    months: months || "*",
-    weeks: weeks || "*"
+    minutes,
+    hours,
+    days,
+    months,
+    weeks,
+    scheduleType
   });
 
   // Debugging output

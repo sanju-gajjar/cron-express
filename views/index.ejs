@@ -4,105 +4,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cron Expression Generator</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/styles.css">
+    <title>Cron Expression Maker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .tab-content {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Cron Expression Generator</h1>
-        <form action="/schedule" method="post" class="form-group">
-            <div class="form-row">
-                <div class="col-md-6">
-                    <label for="minutes">Minutes:</label>
-                    <input type="number" class="form-control" id="minutes" name="minutes"
-                        placeholder="Enter minutes (e.g., 5 for every 5 minutes)">
-                </div>
-                <div class="col-md-6">
-                    <label for="hours">Hours:</label>
-                    <select class="form-control" id="hours" name="hours">
-                        <option value="*">Every Hour</option>
-                        <option value="0">At Midnight</option>
-                        <option value="1">1 AM</option>
-                        <option value="2">2 AM</option>
-                        <option value="3">3 AM</option>
-                        <option value="4">4 AM</option>
-                        <option value="5">5 AM</option>
-                        <option value="6">6 AM</option>
-                        <option value="7">7 AM</option>
-                        <option value="8">8 AM</option>
-                        <option value="9">9 AM</option>
-                        <option value="10">10 AM</option>
-                        <option value="11">11 AM</option>
-                        <option value="12">12 PM</option>
-                        <option value="13">1 PM</option>
-                        <option value="14">2 PM</option>
-                        <option value="15">3 PM</option>
-                        <option value="16">4 PM</option>
-                        <option value="17">5 PM</option>
-                        <option value="18">6 PM</option>
-                        <option value="19">7 PM</option>
-                        <option value="20">8 PM</option>
-                        <option value="21">9 PM</option>
-                        <option value="22">10 PM</option>
-                        <option value="23">11 PM</option>
-                    </select>
-                </div>
+    <div class="container">
+        <h1 class="mt-5">Cron Expression Maker</h1>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="min-tab" data-toggle="tab" href="#min" role="tab" aria-controls="min"
+                    aria-selected="true">Min</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="hourly-tab" data-toggle="tab" href="#hourly" role="tab" aria-controls="hourly"
+                    aria-selected="false">Hourly</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="weekly-tab" data-toggle="tab" href="#weekly" role="tab" aria-controls="weekly"
+                    aria-selected="false">Weekly</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="monthly-tab" data-toggle="tab" href="#monthly" role="tab"
+                    aria-controls="monthly" aria-selected="false">Monthly</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <!-- Min Tab -->
+            <div class="tab-pane fade show active" id="min" role="tabpanel" aria-labelledby="min-tab">
+                <form action="/schedule" method="POST" class="mt-4">
+                    <div class="form-group">
+                        <label for="min-minute">Minutes (0-59)</label>
+                        <input type="text" class="form-control" id="min-minute" name="minutes" placeholder="e.g. 5" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                    <input type="hidden" name="scheduleType" value="min">
+                </form>
             </div>
-            <div class="form-row mt-3">
-                <div class="col-md-6">
-                    <label for="days">Days:</label>
-                    <select class="form-control" id="days" name="days">
-                        <option value="*">Every Day</option>
-                        <option value="1">Monday</option>
-                        <option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option>
-                        <option value="4">Thursday</option>
-                        <option value="5">Friday</option>
-                        <option value="6">Saturday</option>
-                        <option value="7">Sunday</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="months">Months:</label>
-                    <select class="form-control" id="months" name="months">
-                        <option value="*">Every Month</option>
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                </div>
+
+            <!-- Hourly Tab -->
+            <div class="tab-pane fade" id="hourly" role="tabpanel" aria-labelledby="hourly-tab">
+                <form action="/schedule" method="POST" class="mt-4">
+                    <div class="form-group">
+                        <label for="hourly-hour">Hours (0-23)</label>
+                        <select class="form-control" id="hourly-hour" name="hours">
+                            <option value="*">Every hour</option>
+                            <% for (let i=0; i < 24; i++) { %>
+                                <option value="<%= i %>">
+                                    <%= i %>:00
+                                </option>
+                                <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hourly-minute">Minutes (0-59)</label>
+                        <input type="text" class="form-control" id="hourly-minute" name="minutes"
+                            placeholder="e.g. 15" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                    <input type="hidden" name="scheduleType" value="hourly">
+                </form>
             </div>
-            <div class="form-row mt-3">
-                <div class="col-md-12">
-                    <label for="weeks">Weeks:</label>
-                    <select class="form-control" id="weeks" name="weeks">
-                        <option value="*">Every Day of the Week</option>
-                        <option value="0">Sunday</option>
-                        <option value="1">Monday</option>
-                        <option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option>
-                        <option value="4">Thursday</option>
-                        <option value="5">Friday</option>
-                        <option value="6">Saturday</option>
-                    </select>
-                </div>
+
+            <!-- Weekly Tab -->
+            <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
+                <form action="/schedule" method="POST" class="mt-4">
+                    <div class="form-group">
+                        <label for="weekly-hour">Hours (0-23)</label>
+                        <select class="form-control" id="weekly-hour" name="hours">
+                            <option value="*">Every hour</option>
+                            <% for (let i=0; i < 24; i++) { %>
+                                <option value="<%= i %>">
+                                    <%= i %>:00
+                                </option>
+                                <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="weekly-minute">Minutes (0-59)</label>
+                        <input type="text" class="form-control" id="weekly-minute" name="minutes"
+                            placeholder="e.g. 30" />
+                    </div>
+                    <div class="form-group">
+                        <label for="weekly-day">Day of Week</label>
+                        <select class="form-control" id="weekly-day" name="weeks">
+                            <option value="*">Every day</option>
+                            <option value="0">Sunday</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                    <input type="hidden" name="scheduleType" value="weekly">
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary mt-4">Generate Cron Expression</button>
-        </form>
+
+            <!-- Monthly Tab -->
+            <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
+                <form action="/schedule" method="POST" class="mt-4">
+                    <div class="form-group">
+                        <label for="monthly-day">Day of Month (1-31)</label>
+                        <input type="text" class="form-control" id="monthly-day" name="days" placeholder="e.g. 12" />
+                    </div>
+                    <div class="form-group">
+                        <label for="monthly-month">Month</label>
+                        <select class="form-control" id="monthly-month" name="months">
+                            <option value="*">Every month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Cron Expression</button>
+                    <input type="hidden" name="scheduleType" value="monthly">
+                </form>
+            </div>
+        </div>
     </div>
+
+    <!-- JavaScript for Bootstrap tabs -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
